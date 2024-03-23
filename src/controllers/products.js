@@ -1,3 +1,4 @@
+import Category from '../models/Category.js';
 import Product from '../models/Products.js';
 
 export const getProducts = async (req, res) => {
@@ -27,6 +28,10 @@ export const getProductDetail = async (req, res) => {
 export const addProduct = async (req, res) => {
     try {
         const data = await Product(req.body).save();
+        if (req.body.categoryID) {
+            const category = Category.findById(req.body.categoryID);
+            await category.updateOne({ $push: { productID: data._id } });
+        }
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });

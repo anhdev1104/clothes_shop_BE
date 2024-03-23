@@ -4,36 +4,40 @@ const productSchema = new mongoose.Schema(
     {
         name: {
             type: String,
-            required: true,
         },
-        // images: [
-        //     {
-        //         type: String,
-        //     },
-        // ],
+        images: [
+            {
+                type: String,
+                default: null,
+            },
+        ],
         price: {
             type: Number,
         },
-        // priceOrigin: {
-        //     type: Number,
-        // },
-        // size: [
-        //     {
-        //         label: {
-        //             type: String,
-        //         },
-        //         quantity: {
-        //             type: Number,
-        //         },
-        //     },
-        // ],
+        priceOrigin: {
+            type: Number,
+        },
         description: {
             type: String,
-            maxLength: 500,
         },
-        // isActive: {
-        //     type: Number,
-        // },
+        size: [
+            {
+                _id: false,
+                label: {
+                    type: String,
+                },
+                quantity: {
+                    type: Number,
+                },
+            },
+        ],
+        categoryID: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Category',
+        },
+        isActive: {
+            type: Number,
+        },
     },
     { timestamps: true, versionKey: false }
 );
