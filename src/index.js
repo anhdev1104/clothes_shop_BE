@@ -19,12 +19,12 @@ app.use(cors());
 // connect database
 connectDB(process.env.MONGODB_URI);
 
-app.use(productRouter);
-app.use(categoryRouter);
-app.use(sliderRouter);
-app.use(instagramRouter);
+app.use('/api/v1', productRouter);
+app.use('/api/v1', categoryRouter);
+app.use('/api/v1', sliderRouter);
+app.use('/api/v1', instagramRouter);
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
+    console.log(`Server is running at http://localhost:${PORT}/api/v1`);
 });
