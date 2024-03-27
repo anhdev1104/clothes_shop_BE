@@ -3,7 +3,7 @@ import Category from '../models/Category.js';
 export const getCategorys = async (req, res) => {
     try {
         const data = await Category.find();
-        if (data.length < 0) {
+        if (!data) {
             return res.status(404).json({ message: 'No category found' });
         }
         res.status(200).json(data);
@@ -14,8 +14,12 @@ export const getCategorys = async (req, res) => {
 
 export const getCategoryDetail = async (req, res) => {
     try {
-        const data = await Category.findById(req.params.id).populate('productID');
-        if (data.length < 0) {
+        // const limit = +req.query?.limit || 8;
+        const data = await Category.findById(req.params.id).populate({
+            path: 'productID',
+            options: { sort: { createdAt: -1 } },
+        });
+        if (!data) {
             return res.status(404).json({ message: 'No category found' });
         }
         res.status(200).json(data);
@@ -36,7 +40,7 @@ export const addCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
     try {
         const data = await Category.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
-        if (data.length < 0) {
+        if (!data) {
             return res.status(404).json({ message: 'No category found' });
         }
         res.status(200).json(data);
@@ -48,7 +52,7 @@ export const updateCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
     try {
         const data = await Category.deleteOne({ _id: req.params.id });
-        if (data.length < 0) {
+        if (!data) {
             return res.status(404).json({ message: 'No category found' });
         }
         res.status(200).json(data);
