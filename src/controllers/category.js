@@ -15,7 +15,6 @@ export const getCategorys = async (req, res) => {
 
 export const getCategoryDetail = async (req, res) => {
   try {
-    // const limit = +req.query?.limit || 8;
     const data = await Category.findById(req.params.id).populate({
       path: 'productID',
       options: { sort: { createdAt: -1 } },
