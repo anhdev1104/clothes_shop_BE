@@ -1,5 +1,6 @@
 import express from 'express';
 const app = express();
+import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '30mb' }));
 app.use(express.urlencoded({ extended: true, limit: '30mb' }));
 app.use(cors());
+app.use(cookieParser());
 
 // connect database
 connectDB(process.env.MONGODB_URI);

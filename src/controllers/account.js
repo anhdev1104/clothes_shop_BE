@@ -1,5 +1,7 @@
 import Account from '../models/Account.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { generateAccessToken, generateRefreshToken } from '../services/jwtService.js';
 
 export const getAccounts = async (req, res) => {
   try {
@@ -46,6 +48,15 @@ export const addAccount = async (req, res) => {
   }
 };
 
+export const deleteAccount = async (req, res) => {
+  try {
+    const data = await Account.findByIdAndDelete(req.params.id);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const loginUser = async (req, res) => {
   try {
     const user = await Account.findOne({ email: req.body.email });
@@ -59,8 +70,10 @@ export const loginUser = async (req, res) => {
     }
 
     if (user && validPassword) {
-      user.password = undefined; // Không trả về mật khẩu nhầm tăng tính bảo mật
-      res.status(200).json(user);
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
+      const { password, ...dataUser } = user._doc; // Không trả về mật khẩu nhầm tăng tính bảo mật
+      res.status(200).json({ ...dataUser, accessToken, refreshToken });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
