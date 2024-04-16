@@ -82,3 +82,24 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const searchProducts = async (req, res) => {
+  try {
+    // Tìm kiếm sản phẩm dựa trên các điều kiện
+    const productName = req.query.name;
+    let query = {};
+    if (productName) {
+      query = { name: { $regex: new RegExp(productName, 'i') } };
+    }
+
+    const data = await Product.find(query);
+
+    if (data.length === 0) {
+      return res.status(404).json({ message: 'No products found' });
+    }
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

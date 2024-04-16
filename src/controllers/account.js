@@ -61,21 +61,47 @@ export const loginUser = async (req, res) => {
   try {
     const user = await Account.findOne({ email: req.body.email });
     if (!user) {
-      res.status(404).json('Email không tìm thấy !');
+      return res.status(404).json('Email không tìm thấy !');
     }
 
     const validPassword = await bcrypt.compare(req.body.password, user.password);
     if (!validPassword) {
-      res.status(404).json('Sai mật khẩu !');
+      return res.status(404).json('Sai mật khẩu !');
     }
 
     if (user && validPassword) {
       const accessToken = generateAccessToken(user);
       const refreshToken = generateRefreshToken(user);
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: false, // khi deploy nên chuyển sang true
+        samSite: 'strict',
+      });
       const { password, ...dataUser } = user._doc; // Không trả về mật khẩu nhầm tăng tính bảo mật
-      res.status(200).json({ ...dataUser, accessToken, refreshToken });
+      res.status(200).json({ ...dataUser, accessToken });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+export const requestRefreshToken = async (req, res) => {
+  // Take refresh token from user
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.status(401).json('Bạn chưa được xác thực !');
+  jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, user) => {
+    if (err) {
+      console.log(err);
+    }
+
+    // Create new accessToken, refresh token
+    const newAccessToken = generateAccessToken(user);
+    const newRefreshToken = generateRefreshToken(user);
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: false, // khi deploy nên chuyển sang true
+      samSite: 'strict',
+    });
+    res.status(200).json({ accessToken: newAccessToken });
+  });
 };

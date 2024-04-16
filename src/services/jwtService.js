@@ -8,7 +8,7 @@ export const generateAccessToken = user => {
       role: user.role,
     },
     process.env.JWT_ACCESS_KEY,
-    { expiresIn: '30s' }
+    { expiresIn: '1d' }
   );
 };
 
